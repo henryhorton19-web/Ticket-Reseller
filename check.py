@@ -53,10 +53,11 @@ def save_state(state):
 def main():
     previous = load_state()
     current = {}
-# TEST MODE: Simulate a keyword alert
-send_telegram("🧪 Test Alert: Your ticket tracker is working! 🚀")
 
-for name, url in URLS.items():
+    # ✅ TEST MODE: Simulate an alert to confirm setup
+    send_telegram("🧪 Test Alert: Your ticket tracker is working! 🚀")
+
+    for name, url in URLS.items():
         print(f"Checking: {name}")
         matches = fetch_keywords(url)
         current[name] = matches
