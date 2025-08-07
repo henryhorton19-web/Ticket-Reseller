@@ -71,6 +71,9 @@ def main():
     previous = load_state()
     current = {}
 
+    # ✅ Manual test alert to confirm it's working
+    send_telegram("🧪 *Test Alert:* Your Fatsoma ticket monitor is running successfully.")
+
     for name, url in URLS.items():
         print(f"🔍 Checking: {name}")
         matches = fetch_keywords(url)
