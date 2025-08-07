@@ -2,22 +2,26 @@ name: Ticket Monitor
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  # every 10 minutes
-  workflow_dispatch:
+    - cron: '*/5 * * * *'    # ⏰ Run every 5 minutes (UTC)
+  workflow_dispatch:         # 👇 Allows manual runs too
 
 jobs:
-  run:
+  check:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
+      - name: 🧾 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - name: Install dependencies
-        run: |
-          pip install requests beautifulsoup4
-      - name: Run script
+
+      - name: 📦 Install Python dependencies
+        run: pip install requests beautifulsoup4
+
+      - name: 🧠 Run ticket checker
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
