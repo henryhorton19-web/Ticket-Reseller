@@ -56,7 +56,7 @@ def main():
 # TEST MODE: Simulate a keyword alert
 send_telegram("🧪 Test Alert: Your ticket tracker is working! 🚀")
 
-    for name, url in URLS.items():
+for name, url in URLS.items():
         print(f"Checking: {name}")
         matches = fetch_keywords(url)
         current[name] = matches
