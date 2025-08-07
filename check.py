@@ -10,7 +10,7 @@ URLS = {
     "Eventbrite Desi Night": "https://www.eventbrite.co.uk/e/desi-night-london-tickets-1234567890",
     "Ministry of Sound Events": "https://www.ministryofsound.com/events",
     "Fatsoma Hideout": "https://www.fatsoma.com/p/hideout-events",
-    # If these two URLs hang, comment them out temporarily:
+    # If these hang, comment them out temporarily:
     # "Native FM Freshers": "https://native.fm/events",
     # "DICE FM London Uni": "https://dice.fm/search?query=university%20london"
 }
@@ -26,17 +26,26 @@ STATE_FILE = 'page_state.json'
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-# ======= SEND ALERT =======
+# ======= SEND ALERT WITH LOGGING =======
 def send_telegram(message):
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
-        print("Missing Telegram credentials.")
+        print("❌ Missing Telegram credentials.")
         return
+
     url = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage'
-    payload = {'chat_id': TELEGRAM_CHAT_ID, 'text': message}
+    payload = {
+        'chat_id': TELEGRAM_CHAT_ID,
+        'text': message
+    }
+
     try:
-        requests.post(url, data=payload, timeout=10)
+        response = requests.post(url, data=payload, timeout=10)
+        print("📨 Telegram API status:", response.status_code)
+        print("📨 Telegram API response:", response.text)
+        if response.status_code != 200:
+            print("❌ Telegram send failed.")
     except Exception as e:
-        print(f"Failed to send Telegram message: {e}")
+        print("❌ Exception sending Telegram message:", str(e))
 
 # ======= FETCH KEYWORDS =======
 def fetch_keywords(url):
@@ -60,7 +69,7 @@ def save_state(state):
     with open(STATE_FILE, 'w') as f:
         json.dump(state, f)
 
-# ======= MAIN =======
+# ======= MAIN FUNCTION =======
 def main():
     previous = load_state()
     current = {}
@@ -68,7 +77,7 @@ def main():
     print("✅ Inside main()")
     print("🔁 Sending test alert...")
     send_telegram("🧪 Test Alert: Your ticket tracker is running.")
-    print("✅ Test alert sent (if no error occurred)")
+    print("✅ Test alert function called")
 
     for name, url in URLS.items():
         print(f"🔍 Checking: {name}")
@@ -84,3 +93,5 @@ def main():
 
     save_state(current)
 
+if __name__ == "__main__":
+    main()
