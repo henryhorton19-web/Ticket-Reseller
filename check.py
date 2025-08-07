@@ -37,10 +37,8 @@ def send_telegram(message):
 
     try:
         response = requests.post(url, data=payload, timeout=10)
-        print("📨 Telegram status:", response.status_code)
-        print("📨 Telegram response:", response.text)
         if response.status_code != 200:
-            print("❌ Telegram send failed.")
+            print(f"❌ Telegram send failed. Status: {response.status_code}, Response: {response.text}")
     except Exception as e:
         print("❌ Exception sending Telegram message:", str(e))
 
@@ -52,7 +50,7 @@ def fetch_keywords(url):
         text = BeautifulSoup(response.text, 'html.parser').get_text().lower()
         return {kw: (kw in text) for kw in KEYWORDS}
     except RequestException as e:
-        print(f"⚠️ Skipping {url}: {e}")
+        print(f"⚠️ Error fetching {url}: {e}")
         return {kw: False for kw in KEYWORDS}
 
 # ======= LOAD / SAVE STATE =======
@@ -71,9 +69,6 @@ def main():
     previous = load_state()
     current = {}
 
-    # ✅ Manual test alert to confirm it's working
-    send_telegram("🧪 *Test Alert:* Your Fatsoma ticket monitor is running successfully.")
-
     for name, url in URLS.items():
         print(f"🔍 Checking: {name}")
         matches = fetch_keywords(url)
@@ -82,14 +77,14 @@ def main():
         for keyword, found in matches.items():
             prev = previous.get(name, {}).get(keyword, False)
 
-            # ✅ If keyword appears (new drop)
+            # Keyword appeared
             if found and not prev:
                 if keyword == "sold out":
                     send_telegram(f"❌ *{keyword.title()}* just appeared on *{name}* — event likely full.\n{url}")
                 else:
                     send_telegram(f"🎫 *{keyword.title()}* just dropped on *{name}*!\n{url}")
 
-            # ✅ If "sold out" disappears (restock)
+            # Sold out disappeared
             elif not found and prev and keyword == "sold out":
                 send_telegram(f"🎉 *Sold Out disappeared* from *{name}* — tickets may be available again!\n{url}")
 
