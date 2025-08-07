@@ -65,8 +65,10 @@ def main():
     previous = load_state()
     current = {}
 
-    # ✅ Optional test alert
+    print("✅ Inside main()")
+    print("🔁 Sending test alert...")
     send_telegram("🧪 Test Alert: Your ticket tracker is running.")
+    print("✅ Test alert sent (if no error occurred)")
 
     for name, url in URLS.items():
         print(f"🔍 Checking: {name}")
@@ -82,5 +84,3 @@ def main():
 
     save_state(current)
 
-if __name__ == "__main__":
-    main()
